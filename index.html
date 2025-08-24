@@ -1,18 +1,4 @@
-// 正確な文字マッピングでコード描画
-function drawCode(code_id) {
-    currentCodeId = code_id;
-    
-    // キャンバスクリア
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // 白背景
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 黒枠線
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -333,39 +319,41 @@ const GRID_ROWS = 3;
 
 let currentCodeId = '';
 
-// 正しい文字マッピングシステム
-const charToColorMap = {
-    // 大文字 → 赤色
-    'A': { color: '#FF0000', index: 0 }, 'B': { color: '#FF0000', index: 1 }, 'C': { color: '#FF0000', index: 2 },
-    'D': { color: '#FF0000', index: 3 }, 'E': { color: '#FF0000', index: 4 }, 'F': { color: '#FF0000', index: 5 },
-    'G': { color: '#FF0000', index: 6 }, 'H': { color: '#FF0000', index: 7 }, 'I': { color: '#FF0000', index: 8 },
-    'J': { color: '#FF0000', index: 9 }, 'K': { color: '#FF0000', index: 10 }, 'L': { color: '#FF0000', index: 11 },
-    'M': { color: '#FF0000', index: 12 }, 'N': { color: '#FF0000', index: 13 }, 'O': { color: '#FF0000', index: 14 },
-    'P': { color: '#FF0000', index: 15 }, 'Q': { color: '#FF0000', index: 16 }, 'R': { color: '#FF0000', index: 17 },
-    'S': { color: '#FF0000', index: 18 }, 'T': { color: '#FF0000', index: 19 }, 'U': { color: '#FF0000', index: 20 },
-    'V': { color: '#FF0000', index: 21 }, 'W': { color: '#FF0000', index: 22 }, 'X': { color: '#FF0000', index: 23 },
-    'Y': { color: '#FF0000', index: 24 }, 'Z': { color: '#FF0000', index: 25 },
+// 文字マッピングシステム
+const charMapping = {
+    // 赤色（大文字）のマッピング
+    'A': 'red_0', 'B': 'red_1', 'C': 'red_2', 'D': 'red_3', 'E': 'red_4',
+    'F': 'red_5', 'G': 'red_6', 'H': 'red_7', 'I': 'red_8', 'J': 'red_9',
+    'K': 'red_10', 'L': 'red_11', 'M': 'red_12', 'N': 'red_13', 'O': 'red_14',
+    'P': 'red_15', 'Q': 'red_16', 'R': 'red_17', 'S': 'red_18', 'T': 'red_19',
+    'U': 'red_20', 'V': 'red_21', 'W': 'red_22', 'X': 'red_23', 'Y': 'red_24', 'Z': 'red_25',
     
-    // 小文字 → 青色
-    'a': { color: '#0000FF', index: 0 }, 'b': { color: '#0000FF', index: 1 }, 'c': { color: '#0000FF', index: 2 },
-    'd': { color: '#0000FF', index: 3 }, 'e': { color: '#0000FF', index: 4 }, 'f': { color: '#0000FF', index: 5 },
-    'g': { color: '#0000FF', index: 6 }, 'h': { color: '#0000FF', index: 7 }, 'i': { color: '#0000FF', index: 8 },
-    'j': { color: '#0000FF', index: 9 }, 'k': { color: '#0000FF', index: 10 }, 'l': { color: '#0000FF', index: 11 },
-    'm': { color: '#0000FF', index: 12 }, 'n': { color: '#0000FF', index: 13 }, 'o': { color: '#0000FF', index: 14 },
-    'p': { color: '#0000FF', index: 15 }, 'q': { color: '#0000FF', index: 16 }, 'r': { color: '#0000FF', index: 17 },
-    's': { color: '#0000FF', index: 18 }, 't': { color: '#0000FF', index: 19 }, 'u': { color: '#0000FF', index: 20 },
-    'v': { color: '#0000FF', index: 21 }, 'w': { color: '#0000FF', index: 22 }, 'x': { color: '#0000FF', index: 23 },
-    'y': { color: '#0000FF', index: 24 }, 'z': { color: '#0000FF', index: 25 },
+    // 青色（小文字）のマッピング
+    'a': 'blue_0', 'b': 'blue_1', 'c': 'blue_2', 'd': 'blue_3', 'e': 'blue_4',
+    'f': 'blue_5', 'g': 'blue_6', 'h': 'blue_7', 'i': 'blue_8', 'j': 'blue_9',
+    'k': 'blue_10', 'l': 'blue_11', 'm': 'blue_12', 'n': 'blue_13', 'o': 'blue_14',
+    'p': 'blue_15', 'q': 'blue_16', 'r': 'blue_17', 's': 'blue_18', 't': 'blue_19',
+    'u': 'blue_20', 'v': 'blue_21', 'w': 'blue_22', 'x': 'blue_23', 'y': 'blue_24', 'z': 'blue_25',
     
-    // 数字 → 緑色
-    '0': { color: '#00AA00', index: 0 }, '1': { color: '#00AA00', index: 1 }, '2': { color: '#00AA00', index: 2 },
-    '3': { color: '#00AA00', index: 3 }, '4': { color: '#00AA00', index: 4 }, '5': { color: '#00AA00', index: 5 },
-    '6': { color: '#00AA00', index: 6 }, '7': { color: '#00AA00', index: 7 }, '8': { color: '#00AA00', index: 8 },
-    '9': { color: '#00AA00', index: 9 }
+    // 緑色（数字）のマッピング
+    '0': 'green_0', '1': 'green_1', '2': 'green_2', '3': 'green_3', '4': 'green_4',
+    '5': 'green_5', '6': 'green_6', '7': 'green_7', '8': 'green_8', '9': 'green_9'
 };
 
-function getCharMapping(char) {
-    return charToColorMap[char] || { color: '#CCCCCC', index: -1 };
+// 色から文字への変換
+function getCharFromMapping(char) {
+    const mapping = charMapping[char];
+    if (!mapping) return { char: '', color: '#CCCCCC' };
+    
+    if (mapping.startsWith('red_')) {
+        return { char, color: '#FF0000' };
+    } else if (mapping.startsWith('blue_')) {
+        return { char, color: '#0000FF' };
+    } else if (mapping.startsWith('green_')) {
+        return { char, color: '#00AA00' };
+    }
+    
+    return { char: '', color: '#CCCCCC' };
 }
 
 // ステータス表示
@@ -379,7 +367,7 @@ function hideStatus() {
     statusDiv.style.display = 'none';
 }
 
-// 正確な文字マッピングでコード描画
+// 改良されたコード描画（正確な文字マッピング対応）
 function drawCode(code_id) {
     currentCodeId = code_id;
     
@@ -394,61 +382,6 @@ function drawCode(code_id) {
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 3;
     ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
-    
-    // グリッド設定（6x3）
-    const gridCols = 6;
-    const gridRows = 3;
-    const cellSize = 45;
-    const spacing = 5;
-    const startX = 30;
-    const startY = 30;
-    
-    // メインコードエリア - 正確な文字→色マッピング
-    for (let i = 0; i < code_id.length && i < 18; i++) {
-        const col = i % gridCols;
-        const row = Math.floor(i / gridCols);
-        
-        const x = startX + (col * (cellSize + spacing));
-        const y = startY + (row * (cellSize + spacing));
-        
-        const char = code_id[i];
-        const mapping = getCharMapping(char);
-        
-        // 色付きセルを描画
-        ctx.fillStyle = mapping.color;
-        ctx.fillRect(x, y, cellSize, cellSize);
-        
-        // 黒枠線
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, cellSize, cellSize);
-        
-        // 文字を白で中央表示
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 16px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(char, x + cellSize/2, y + cellSize/2);
-        
-        // デバッグ用：セル番号を小さく表示
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '8px monospace';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.fillText(i.toString(), x + 2, y + 2);
-    }
-    
-    // コーナーマーカー（位置認識用）
-    drawSimpleCornerMarker(15, 15);
-    drawSimpleCornerMarker(canvas.width - 35, 15);
-    drawSimpleCornerMarker(15, canvas.height - 35);
-    
-    // 詳細情報表示
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`Code: ${code_id} (${code_id.length} chars)`, canvas.width/2, canvas.height - 10);
-}
     
     // グリッド設定（6x3）
     const gridCols = 6;
@@ -496,6 +429,63 @@ function drawCode(code_id) {
     ctx.font = 'bold 12px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`Code ID: ${code_id}`, canvas.width/2, canvas.height - 10);
+}
+    
+    // グリッド設定（6x3）
+    const gridCols = 6;
+    const gridRows = 3;
+    const cellSize = 45;
+    const spacing = 5;
+    const startX = 30;
+    const startY = 30;
+    
+    // メインコードエリア
+    for (let i = 0; i < code_id.length && i < 18; i++) {
+        const col = i % gridCols;
+        const row = Math.floor(i / gridCols);
+        
+        const x = startX + (col * (cellSize + spacing));
+        const y = startY + (row * (cellSize + spacing));
+        
+        const char = code_id[i];
+        let color;
+        
+        // 明確な色分け（カメラで認識しやすい）
+        if (char.match(/[A-Z]/)) {
+            color = '#FF0000'; // 純粋な赤
+        } else if (char.match(/[a-z]/)) {
+            color = '#0000FF'; // 純粋な青
+        } else {
+            color = '#00AA00'; // 明るい緑
+        }
+        
+        // 単純な四角形（認識しやすさ優先）
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, cellSize, cellSize);
+        
+        // 黒い枠線
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, cellSize, cellSize);
+        
+        // 文字を白で中央に表示
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 16px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(char, x + cellSize/2, y + cellSize/2);
+    }
+    
+    // コーナーマーカー（位置認識用）
+    drawSimpleCornerMarker(15, 15);
+    drawSimpleCornerMarker(canvas.width - 35, 15);
+    drawSimpleCornerMarker(15, canvas.height - 35);
+    
+    // タイトル
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Code: ${code_id}`, canvas.width/2, canvas.height - 10);
 }
 
 // 図形描画
