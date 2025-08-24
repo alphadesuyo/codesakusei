@@ -277,15 +277,15 @@ canvas {
             
             <div class="legend">
                 <div class="legend-item">
-                    <div class="legend-color" style="background: #e53e3e;"></div>
+                    <div class="legend-color" style="background: #FF0000;"></div>
                     <span>大文字 (A-Z)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: #3182ce;"></div>
+                    <div class="legend-color" style="background: #0000FF;"></div>
                     <span>小文字 (a-z)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background: #38a169;"></div>
+                    <div class="legend-color" style="background: #00AA00;"></div>
                     <span>数字 (0-9)</span>
                 </div>
             </div>
@@ -330,71 +330,77 @@ function hideStatus() {
     statusDiv.style.display = 'none';
 }
 
-// 改良されたコード描画（QRコード風）
+// 改良されたコード描画（読み取りやすさ重視）
 function drawCode(code_id) {
     currentCodeId = code_id;
     
     // キャンバスクリア
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // 背景のグラデーション
-    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#f7fafc');
-    gradient.addColorStop(1, '#edf2f7');
-    ctx.fillStyle = gradient;
+    // 白背景
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // 枠線
-    ctx.strokeStyle = '#2d3748';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+    // 黒枠線
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
     
-    // コーナーマーカー（QRコード風）
-    drawCornerMarker(15, 15);
-    drawCornerMarker(canvas.width - 45, 15);
-    drawCornerMarker(15, canvas.height - 45);
+    // グリッド設定（6x3）
+    const gridCols = 6;
+    const gridRows = 3;
+    const cellSize = 45;
+    const spacing = 5;
+    const startX = 30;
+    const startY = 30;
     
     // メインコードエリア
     for (let i = 0; i < code_id.length && i < 18; i++) {
-        const col = i % GRID_COLS;
-        const row = Math.floor(i / GRID_COLS);
+        const col = i % gridCols;
+        const row = Math.floor(i / gridCols);
         
-        const x = PADDING + (col * CELL_SIZE) + (col * 5);
-        const y = PADDING + (row * CELL_SIZE) + (row * 5) + 20;
+        const x = startX + (col * (cellSize + spacing));
+        const y = startY + (row * (cellSize + spacing));
         
         const char = code_id[i];
-        let color, shape;
+        let color;
         
+        // 明確な色分け（カメラで認識しやすい）
         if (char.match(/[A-Z]/)) {
-            color = '#e53e3e';
-            shape = 'square';
+            color = '#FF0000'; // 純粋な赤
         } else if (char.match(/[a-z]/)) {
-            color = '#3182ce';
-            shape = 'circle';
+            color = '#0000FF'; // 純粋な青
         } else {
-            color = '#38a169';
-            shape = 'diamond';
+            color = '#00AA00'; // 明るい緑
         }
         
+        // 単純な四角形（認識しやすさ優先）
         ctx.fillStyle = color;
-        ctx.strokeStyle = '#2d3748';
+        ctx.fillRect(x, y, cellSize, cellSize);
+        
+        // 黒い枠線
+        ctx.strokeStyle = '#000000';
         ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, cellSize, cellSize);
         
-        drawShape(x, y, CELL_SIZE - 10, shape);
-        
-        // 文字を中央に表示
-        ctx.fillStyle = 'white';
+        // 文字を白で中央に表示
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 16px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(char, x + CELL_SIZE/2 - 5, y + CELL_SIZE/2 - 5);
+        ctx.fillText(char, x + cellSize/2, y + cellSize/2);
     }
     
+    // コーナーマーカー（位置認識用）
+    drawSimpleCornerMarker(15, 15);
+    drawSimpleCornerMarker(canvas.width - 35, 15);
+    drawSimpleCornerMarker(15, canvas.height - 35);
+    
     // タイトル
-    ctx.fillStyle = '#2d3748';
-    ctx.font = 'bold 14px sans-serif';
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Custom Code System', canvas.width/2, canvas.height - 15);
+    ctx.fillText(`Code: ${code_id}`, canvas.width/2, canvas.height - 10);
 }
 
 // 図形描画
@@ -427,21 +433,21 @@ function drawShape(x, y, size, shape) {
     ctx.restore();
 }
 
-// コーナーマーカー描画
-function drawCornerMarker(x, y) {
-    const size = 30;
+// シンプルなコーナーマーカー描画
+function drawSimpleCornerMarker(x, y) {
+    const size = 20;
     
-    // 外側の四角
-    ctx.fillStyle = '#2d3748';
+    // 黒い四角
+    ctx.fillStyle = '#000000';
     ctx.fillRect(x, y, size, size);
     
-    // 中間の四角（白）
-    ctx.fillStyle = 'white';
+    // 白い中央
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(x + 5, y + 5, size - 10, size - 10);
     
-    // 内側の四角（黒）
-    ctx.fillStyle = '#2d3748';
-    ctx.fillRect(x + 10, y + 10, size - 20, size - 20);
+    // 黒い中心点
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(x + 8, y + 8, size - 16, size - 16);
 }
 
 // コード生成
