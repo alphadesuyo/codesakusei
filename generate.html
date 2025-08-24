@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>オリジナルコード生成</title>
+<style>
+body { font-family: sans-serif; text-align:center; margin:20px; }
+canvas { border:1px solid #000; margin-top:10px; }
+textarea { width: 400px; }
+@media(max-width:480px){
+    textarea { width: 90%; }
+    canvas { width: 90%; height:auto; }
+}
+</style>
+</head>
+<body>
+<h2>メモ入力してコード生成</h2>
+<textarea id="memo" rows="4" placeholder="メモを入力"></textarea><br>
+<button id="generate">コード生成</button><br><br>
+<canvas id="codeCanvas" width="300" height="120"></canvas>
+
+<script>
+const canvas = document.getElementById('codeCanvas');
+const ctx = canvas.getContext('2d');
+const BLOCK_W = 50, BLOCK_H = 50;
+
+function drawCode(code_id){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let i=0;i<code_id.length;i++){
+        const x = (i%5)*BLOCK_W + 10;
+        const y = Math.floor(i/5)*BLOCK_H + 10;
+        const char = code_id[i];
+        if(char.match(/[A-Z]/)) ctx.fillStyle='red';
+        else if(char.match(/[a-z]/)) ctx.fillStyle='blue';
+        else ctx.fillStyle='green';
+        ctx.beginPath();
+        ctx.arc(x+BLOCK_W/2, y+BLOCK_H/2, BLOCK_W/2-5,0,Math.PI*2);
+        ctx.fill();
+    }
+}
+
+document.getElementById('generate').addEventListener('click', async()=>{
+    const text = document.getElementById('memo').value;
+    if(!text) return alert('メモを入力してください');
+
+    const res = await fetch('https://collectors-hb-hampshire-rush.trycloudflare.com/api/save',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({text})
+    });
+    const data = await res.json();
+    const code_id = data.code_id;
+    drawCode(code_id);
+    alert('コード生成完了！code_id:'+code_id);
+});
+</script>
+</body>
+</html>
